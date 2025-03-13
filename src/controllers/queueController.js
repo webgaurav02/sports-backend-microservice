@@ -1,11 +1,5 @@
 // controllers/queueController.js
-const redis = require("redis");
-
-// Create a Redis client (adjust options as needed)
-const client = redis.createClient({
-    url: process.env.REDIS_URL || "redis://127.0.0.1:6379"
-});
-client.connect();
+const redisClient = require('../config/redis');
 
 // For demonstration, we assume the initial allowed batch is 5000 users.
 // In a real-world scenario, you might update the threshold every 10 minutes.
@@ -16,7 +10,7 @@ exports.enterQueue = async (req, res) => {
 
     try {
         // Each click increments a global counter and returns the user's rank.
-        const rank = await client.incr("bookingQueueCounter");
+        const rank = await redisClient.incr("bookingQueueCounter");
 
         // Determine if the user is allowed immediately (if rank <= allowed threshold)
         const allowed = rank <= INITIAL_THRESHOLD;

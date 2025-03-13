@@ -20,11 +20,14 @@ router.get('/api/sections/availability', sectionController.getSectionsWithAvaila
 router.get('/api/time', timeController.getCurrentTime);
 
 //Endpoint to add to queue and book
-router.post('/api/booking/book-ticket', bookingController.enqueueBooking);
+// router.post('/api/booking/book-ticket', bookingController.enqueueBooking);
 
 // Route to enter the queue
 router.post("/api/queue/enter", queueController.enterQueue);
 // Route to check queue status (pass your rank as a query parameter)
 router.get("/api/queue/status", queueController.queueStatus);
+
+
+router.post('/api/check-and-lock', bookingController.checkAndLockSeats);
 
 module.exports = router;

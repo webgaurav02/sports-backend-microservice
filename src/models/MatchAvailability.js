@@ -8,6 +8,11 @@ const matchAvailabilitySchema = new Schema({
     gate: { type: String, required: true },
     availableQuantity: { type: Number, required: true },
     lockedSeats: { type: Number, default: 0 },
+    seatNumberRange: {
+        start: { type: Number, required: true },
+        end: { type: Number, required: true }
+    },
+    nextSeatNumber: { type: Number, required: true },
     price: { type: Number, required: true }
 });
 
