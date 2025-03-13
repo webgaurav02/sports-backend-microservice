@@ -29,6 +29,7 @@ bookingQueue.process(5000, async (job) => {
 
 // API controller function to add a booking job
 exports.enqueueBooking = async (req, res) => {
+  
   try {
     const bookingData = req.body; // e.g., { userId, sectionId, matchId, requestedSeats }
     // Enqueue the booking job into the queue
@@ -38,4 +39,5 @@ exports.enqueueBooking = async (req, res) => {
     console.error("Error enqueuing booking:", error);
     res.status(500).json({ success: false, error: error.message });
   }
+  
 };
