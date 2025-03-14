@@ -6,11 +6,9 @@ const bookingSchema = new Schema({
   matchId: { type: Schema.Types.ObjectId, ref: 'Match', required: true },
   sectionId: { type: String, required: true, ref: 'Section', },
   numberOfSeats: { type: Number, required: true },
-  seatNumbers: { type: [Number], default: [] },
   transactionId: { type: String, required: true },
   status: { type: String, enum: ['pending', 'confirmed', 'cancelled'], default: 'pending' },
   lockExpiresAt: { type: Date, required: true },
-  status: { type: String, enum: ['pending', 'confirmed', 'cancelled'], default: 'pending' },
   createdAt: { type: Date, default: Date.now }
 });
 

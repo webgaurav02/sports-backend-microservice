@@ -5,6 +5,7 @@ const sectionController = require('../controllers/sectionController');
 const matchController = require('../controllers/matchController');
 const timeController = require('../controllers/timeController');
 const queueController = require("../controllers/queueController");
+const ticketReleaseController = require('../controllers/ticketReleaseController');
 
 
 
@@ -29,5 +30,10 @@ router.get("/api/queue/status", queueController.queueStatus);
 
 
 router.post('/api/check-and-lock', bookingController.checkAndLockSeats);
+
+
+// Set Quantities
+router.post('/api/tickets/release/multi', ticketReleaseController.releaseTicketsForSections);
+
 
 module.exports = router;
