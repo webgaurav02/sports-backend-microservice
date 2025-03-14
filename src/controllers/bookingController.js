@@ -14,7 +14,7 @@ const { publishSeatUpdate } = require('../socket');
  * and publishes real-time seat updates via WebSockets.
  */
 exports.checkAndLockSeats = async (req, res) => {
-  const { sectionId, matchId, requestedSeats, transactionId, userId } = req.body;
+  const { sectionId, matchId, requestedSeats, transactionId, userId, baseAmt, convenienceFee, platformFee, totalAmount, } = req.body;
 
   try {
     // Atomically check and update the MatchAvailability document:
@@ -45,6 +45,10 @@ exports.checkAndLockSeats = async (req, res) => {
       matchId,
       sectionId,
       numberOfSeats: requestedSeats,
+      baseAmt,
+      convenienceFee,
+      platformFee,
+      totalAmount,
       transactionId,
       status: 'pending',
       lockExpiresAt,
