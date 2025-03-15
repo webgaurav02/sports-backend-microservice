@@ -8,6 +8,7 @@ const bookingSchema = new Schema({
   sectionId: { type: String, required: true, ref: 'Section', },
   numberOfSeats: { type: Number },
   transactionId: { type: String },
+  orderId: { type: String, unique: true },
   baseAmt: { type: Number },
   convenienceFee: { type: Number },
   platformFee: { type: Number },

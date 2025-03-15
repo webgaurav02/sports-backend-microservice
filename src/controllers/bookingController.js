@@ -62,3 +62,24 @@ exports.checkAndLockSeats = async (req, res) => {
     return res.status(400).json({ success: false, error: error.message });
   }
 };
+
+
+
+exports.updateOrder = async (req, res) => {
+
+  const { transactionId, orderId } = req.body;
+
+  try {
+    const booking = await Booking.findOne({ transactionId });
+    if (!booking) {
+      return res.status(404).json({ success: false, error: 'Booking not found' });
+    }
+
+    booking.orderId = orderId;
+    await booking.save();
+
+    return res.json({ success: true, booking });
+  } catch (error) {
+    return res.status(400).json({ success: false, error: error.message });
+  }
+};

@@ -3,44 +3,50 @@ const redisClient = require('../config/redis');
 
 // For demonstration, we assume the initial allowed batch is 5000 users.
 // In a real-world scenario, you might update the threshold every 10 minutes.
-const INITIAL_THRESHOLD = 2000;
+// controllers/queueController.js
+const INITIAL_THRESHOLD = 500; // Updated to 500
 
-// Endpoint to "enter" the queue
 exports.enterQueue = async (req, res) => {
-
     try {
-        // Each click increments a global counter and returns the user's rank.
-        const rank = await redisClient.incr("bookingQueueCounter");
+        const { matchId } = req.body;
+        if (!matchId) return res.status(400).json({ error: "Match ID required" });
 
-        // Determine if the user is allowed immediately (if rank <= allowed threshold)
-        const allowed = rank <= INITIAL_THRESHOLD;
+        const counterKey = `bookingQueueCounter:${matchId}`;
+        const rank = await redisClient.incr(counterKey);
 
-        // You can also store the user's rank (or a token) in Redis or set a cookie for later validation.
-        res.json({ success: true, allowed, rank });
-    } catch (err) {
-        console.error("Error entering queue:", err);
-        res.status(500).json({ success: false, error: err.message });
-    }
-};
-
-// Endpoint to check the user's queue status
-exports.queueStatus = async (req, res) => {
-    try {
-        // The client sends their assigned rank (from the cookie or query param)
-        const { rank } = req.query;
-        if (!rank) {
-            return res.status(400).json({ success: false, error: "Rank is required" });
+        // Set queue start time if first user
+        if (rank === 1) {
+            await redisClient.set(`queueStartTime:${matchId}`, Date.now());
         }
 
-        // In a real system, the allowed threshold might increase over time.
-        // For simplicity, we assume the threshold remains INITIAL_THRESHOLD for now.
-        // You could calculate the current threshold based on the current time.
-        const currentThreshold = INITIAL_THRESHOLD;
-        const allowed = Number(rank) <= currentThreshold;
+        const startTime = await redisClient.get(`queueStartTime:${matchId}`);
+        const currentThreshold = calculateCurrentThreshold(startTime);
 
-        res.json({ success: true, allowed, currentThreshold });
+        const allowed = rank <= currentThreshold;
+        res.json({ success: true, allowed, rank });
     } catch (err) {
-        console.error("Error fetching queue status:", err);
-        res.status(500).json({ success: false, error: err.message });
+        res.status(500).json({ error: err.message });
     }
 };
+
+exports.queueStatus = async (req, res) => {
+    try {
+        const { rank, matchId } = req.query;
+        if (!rank || !matchId) return res.status(400).json({ error: "Rank and Match ID required" });
+
+        const startTime = await redisClient.get(`queueStartTime:${matchId}`);
+        const currentThreshold = calculateCurrentThreshold(startTime);
+
+        const allowed = Number(rank) <= currentThreshold;
+        res.json({ success: true, allowed, currentThreshold });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+function calculateCurrentThreshold(startTime) {
+    if (!startTime) return INITIAL_THRESHOLD;
+    const elapsed = Date.now() - parseInt(startTime, 10);
+    const intervals = Math.floor(elapsed / (10 * 60 * 1000)); // 10-minute intervals
+    return INITIAL_THRESHOLD + intervals * 500;
+}

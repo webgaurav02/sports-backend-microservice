@@ -30,6 +30,7 @@ router.get("/api/queue/status", queueController.queueStatus);
 
 
 router.post('/api/check-and-lock', bookingController.checkAndLockSeats);
+router.post('/api/update-booking', bookingController.updateOrder);
 
 
 // Set Quantities
