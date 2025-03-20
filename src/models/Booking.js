@@ -12,6 +12,7 @@ const bookingSchema = new Schema({
   baseAmt: { type: Number },
   convenienceFee: { type: Number },
   platformFee: { type: Number },
+  gst: { type: Number },
   totalAmount: { type: Number },
   paymentId: { type: String },
   status: { type: String, enum: ['pending', 'confirmed', 'cancelled'], default: 'pending' },
